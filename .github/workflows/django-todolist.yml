@@ -1,0 +1,45 @@
+name: Deploy Django To-Do List
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.PAT_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Stop and remove old containers
+        run: |
+          OLD_CONTAINERS=$(docker ps -a --filter name=todolist --format "{{.ID}}")
+          if [ -n "$OLD_CONTAINERS" ]; then
+            docker stop $OLD_CONTAINERS
+            docker rm $OLD_CONTAINERS
+          fi
+        continue-on-error: true
+
+      - name: Build Docker image
+        run: docker build -t ghcr.io/arsank47/todolist:latest .
+        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoList/_work/DjangoTodoList/DjangoTodoList # UPDATE THIS PATH
+
+      - name: Push Docker image to GHCR
+        run: docker push ghcr.io/arsank47/todolist:latest
+
+      - name: Pull Docker image from GHCR (optional)
+        run: docker pull ghcr.io/arsank47/todolist:latest  # Optional step for verification
+
+      - name: Run container with restart
+        run: |
+          docker run --name todolist -d --restart=always -p 8001:8001 ghcr.io/arsank47/todolist:latest
+
+      - name: Show Docker containers
+        run: docker ps

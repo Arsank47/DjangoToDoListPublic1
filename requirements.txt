@@ -1,0 +1,8 @@
+Django>=3.2,<4.0  # Specify the Django version you want to use
+djangorestframework  # If you're using Django REST Framework for APIs
+psycopg2-binary  # If you're using PostgreSQL as your database
+
+# Optional packages
+django-cors-headers  # If you need to handle CORS for API requests
+gunicorn  # For serving your app in production
+whitenoise  # For serving static files in production
