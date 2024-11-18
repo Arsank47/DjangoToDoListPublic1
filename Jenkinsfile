@@ -6,10 +6,16 @@ pipeline {
         }
     }
 
+    options {
+        // Reuse the same node for all stages
+        reuseNode true
+    }
+
     environment {
         // Set the Django settings module to your app's settings
         DJANGO_SETTINGS_MODULE = 'todo_list.settings'
         VENV_DIR = 'venv'
+        PORT = '8000' // Port to run the Django app
     }
 
     stages {
@@ -39,22 +45,23 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Run Application') {
             steps {
-                // Deploy the application (this is an example using SSH)
+                // Run the Django application
                 sh '''
                 . ${VENV_DIR}/bin/activate
-                # Assuming you have a deployment script or command
-                scp -r . user@yourserver:/path/to/deploy/
-                ssh user@yourserver 'cd /path/to/deploy && source venv/bin/activate && python manage.py migrate && python manage.py collectstatic --noinput && systemctl restart your-django-app.service'
+                python manage.py migrate
+                python manage.py collectstatic --noinput
+                python manage.py runserver 0.0.0.0:${PORT} &
                 '''
+                // Note: The '&' runs the server in the background
             }
         }
     }
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Deployment successful! The Django app is running.'
         }
         failure {
             echo 'Deployment failed!'
