@@ -1,8 +1,13 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.9-alpine' // Use the appropriate Python version with Alpine
+            args '-u' // Run as unprivileged user
+        }
+    }
 
     environment {
-        // Define any environment variables you need
+        // Set the Django settings module to your app's settings
         DJANGO_SETTINGS_MODULE = 'todo_list.settings'
         VENV_DIR = 'venv'
     }
@@ -10,9 +15,13 @@ pipeline {
     stages {
         stage('Setup Environment') {
             steps {
-                // Create a virtual environment and install dependencies
-                sh 'python3 -m venv ${VENV_DIR}'
-                sh '. ${VENV_DIR}/bin/activate && pip install -r requirements.txt'
+                // Install dependencies and create a virtual environment
+                sh '''
+                apk add --no-cache gcc musl-dev libffi-dev python3-dev
+                python3 -m venv ${VENV_DIR}
+                . ${VENV_DIR}/bin/activate && pip install --upgrade pip
+                . ${VENV_DIR}/bin/activate && pip install -r requirements.txt
+                '''
             }
         }
 
