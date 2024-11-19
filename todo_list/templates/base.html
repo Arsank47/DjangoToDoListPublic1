@@ -6,9 +6,26 @@
     <title>To-Do List</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom styles */
+        .navbar {
+            background-color: #343a40; /* Darker background color */
+        }
+        .navbar-brand, .nav-link {
+            color: #ffffff; /* White text color */
+        }
+        .navbar-brand:hover, .nav-link:hover {
+            color: #f8f9fa; /* Lighter text color on hover */
+        }
+        .container {
+            background-color: #f8f9fa; /* Light background for the content area */
+            border-radius: 5px; /* Rounded corners */
+            padding: 20px; /* Padding for the content area */
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="{% url 'task_list' %}">Can you do it?</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
