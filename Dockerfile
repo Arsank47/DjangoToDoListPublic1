@@ -27,4 +27,4 @@ WORKDIR /app/todo_list
 EXPOSE 8001
 
 # Command to run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8003"]
