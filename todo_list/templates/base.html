@@ -3,46 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>Can You Do It?</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Custom styles */
+        body {
+            background: linear-gradient(120deg, #1e3c72, #2a5298); /* Gradient background */
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
         .navbar {
-            background-color: #343a40; /* Darker background color */
+            background: rgba(0, 0, 0, 0.8); /* Semi-transparent navbar */
+            backdrop-filter: blur(5px);
+            border-bottom: 2px solid #f8f9fa; /* Subtle border */
         }
+
         .navbar-brand, .nav-link {
-            color: #ffffff; /* White text color */
+            color: #f8f9fa !important; /* Bright text color */
+            font-weight: bold;
+            text-transform: uppercase;
         }
+
         .navbar-brand:hover, .nav-link:hover {
-            color: #f8f9fa; /* Lighter text color on hover */
+            color: #ffca28 !important; /* Accent color on hover */
         }
+
         .container {
-            background-color: #f8f9fa; /* Light background for the content area */
-            border-radius: 5px; /* Rounded corners */
-            padding: 20px; /* Padding for the content area */
+            margin-top: 50px;
+            max-width: 800px;
+            background-color: #ffffff; /* White card background */
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            padding: 30px;
+        }
+
+        .btn-custom {
+            background-color: #ffca28;
+            color: #343a40;
+            font-weight: bold;
+            border: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        footer {
+            margin-top: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #f8f9fa;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #ffca28;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="{% url 'task_list' %}">Can you do it?</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="{% url 'task_list' %}">Can You Do It?</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'task_create' %}">Create Task</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-sm btn-custom" href="#">Get Started</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <div class="container my-5">
+    <div class="container">
         {% block content %}
         {% endblock %}
     </div>
+
+    <footer>
+        <p>&copy; 2024 Can You Do It? | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a></p>
+    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
