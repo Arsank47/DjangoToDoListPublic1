@@ -39,7 +39,7 @@ jobs:
 
       - name: Run container with restart
         run: |
-          docker run --name todolist -d --restart=always -p 8002:8002 ghcr.io/arsank47/todolist_public:latest
+          docker run --name todolist_public -d --restart=always -p 8002:8002 ghcr.io/arsank47/todolist_public:latest
 
       - name: Show Docker containers
         run: docker ps
