@@ -35,7 +35,7 @@ jobs:
         run: docker push ghcr.io/arsank47/todolist_public:latest
 
       - name: Pull Docker image from GHCR (optional)
-        run: docker pull ghcr.io/arsank47/todolist_public:latest  # Optional step for verification
+        run: docker pull ghcr.io/arsank47/todolist_public:latest  # Optional step for verification 1
 
       - name: Run container with restart
         run: |
