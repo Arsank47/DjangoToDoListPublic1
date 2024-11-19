@@ -1,4 +1,4 @@
-name: Deploy Django To-Do List
+name: Deploy Django To-Do List Public
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
 
       - name: Stop and remove old containers
         run: |
-          OLD_CONTAINERS=$(docker ps -a --filter name=todolist --format "{{.ID}}")
+          OLD_CONTAINERS=$(docker ps -a --filter name=todolist_public --format "{{.ID}}")
           if [ -n "$OLD_CONTAINERS" ]; then
             docker stop $OLD_CONTAINERS
             docker rm $OLD_CONTAINERS
@@ -28,18 +28,18 @@ jobs:
         continue-on-error: true
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/arsank47/todolist:latest .
-        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoList/_work/DjangoTodoList/DjangoTodoList # UPDATE THIS PATH
+        run: docker build -t ghcr.io/arsank47/todolist_public:latest .
+        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoListPublic/_work/DjangoTodoListPublic/DjangoTodoListPublic # UPDATE THIS PATH
 
       - name: Push Docker image to GHCR
-        run: docker push ghcr.io/arsank47/todolist:latest
+        run: docker push ghcr.io/arsank47/todolist_public:latest
 
       - name: Pull Docker image from GHCR (optional)
-        run: docker pull ghcr.io/arsank47/todolist:latest  # Optional step for verification
+        run: docker pull ghcr.io/arsank47/todolist_public:latest  # Optional step for verification
 
       - name: Run container with restart
         run: |
-          docker run --name todolist -d --restart=always -p 8001:8001 ghcr.io/arsank47/todolist:latest
+          docker run --name todolist -d --restart=always -p 8002:8002 ghcr.io/arsank47/todolist_public:latest
 
       - name: Show Docker containers
         run: docker ps
