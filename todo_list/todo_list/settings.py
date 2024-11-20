@@ -133,3 +133,13 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Global settings for login and logout
+
+LOGIN_URL = '/'
+
+
+# Redirect to home URL after login (Default redirects to /accounts/profile/)
+
+LOGIN_REDIRECT_URL = '/tasks/'  # Redirects authenticated users to the To-Do List
+LOGOUT_REDIRECT_URL = '/'
