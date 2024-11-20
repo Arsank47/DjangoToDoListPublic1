@@ -1,14 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <div class="container mt-5">
         <h1 class="text-center">Login</h1>
+
+        <!-- Display error messages -->
+        {% if messages %}
+            <div class="alert alert-danger">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Add CSRF token for protection -->
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
@@ -23,4 +28,4 @@
             <p class="text-center mt-3">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
         </form>
     </div>
-</body>
+{% endblock %}
