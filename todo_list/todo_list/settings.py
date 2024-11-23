@@ -123,10 +123,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# settings.py
+
 STATIC_URL = '/static/'
-""" STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-] """
+
+# Ensure that Django knows where your static files are located
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # Points to your main 'static' directory
+    BASE_DIR / "todo_list/static",  # Points to the 'static' directory inside 'todo_list'
+]
 
 
 # Default primary key field type
