@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 # Install dependencies
-RUN apk add --no-cache gcc musl-dev linux-headers postgresql-dev
+RUN apk add --no-cache gcc musl-dev linux-headers postgresql-dev bash
 
 # Copy the requirements file
 COPY requirements.txt .
@@ -20,11 +20,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire project, including the todo_list directory
 COPY . .
 
+# Ensure SQLite database persistence
+VOLUME /app/db.sqlite3
+
 # Set the working directory to the todo_list directory
 WORKDIR /app/todo_list
 
 # Expose the port the app runs on
-EXPOSE 8001
+EXPOSE 8003
 
-# Command to run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8003"]
+# Command to run the application with migrations
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8003"]

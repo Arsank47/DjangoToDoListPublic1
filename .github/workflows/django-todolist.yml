@@ -18,28 +18,31 @@ jobs:
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
 
-      - name: Stop and remove old containers
+      - name: Backup Database
         run: |
-          OLD_CONTAINERS=$(docker ps -a --filter name=todolist_public --format "{{.ID}}")
-          if [ -n "$OLD_CONTAINERS" ]; then
-            docker stop $OLD_CONTAINERS
-            docker rm $OLD_CONTAINERS
-          fi
-        continue-on-error: true
+          docker cp todolist_public:/app/db.sqlite3 ./db_backup.sqlite3 || echo "No backup created. First deployment?"
 
-      - name: Build Docker image
+      - name: Stop and Remove Old Containers
+        run: |
+          docker stop todolist_public || true
+          docker rm todolist_public || true
+
+      - name: Build Docker Image
         run: docker build -t ghcr.io/arsank47/todolist_public:latest .
-        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoListPublic/_work/DjangoToDoListPublic1/DjangoToDoListPublic1 # UPDATE THIS PATH
+        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoListPublic/_work/DjangoToDoListPublic1/DjangoToDoListPublic1
 
-      - name: Push Docker image to GHCR
+      - name: Push Docker Image to GHCR
         run: docker push ghcr.io/arsank47/todolist_public:latest
 
-      - name: Pull Docker image from GHCR (optional)
-        run: docker pull ghcr.io/arsank47/todolist_public:latest  # Optional step for verification 1
-
-      - name: Run container with restart
+      - name: Run New Container
         run: |
-          docker run --name todolist_public -d --restart=always -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
+          docker run --name todolist_public -d --restart=always \
+          -v /app/db.sqlite3:/app/db.sqlite3 \
+          -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
+          
+      - name: Apply Migrations
+        run: |
+          docker exec todolist_public python manage.py migrate
 
-      - name: Show Docker containers
+      - name: Show Running Containers
         run: docker ps
