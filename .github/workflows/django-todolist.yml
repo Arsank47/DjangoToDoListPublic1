@@ -18,45 +18,28 @@ jobs:
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
 
-      - name: Backup Database
+      - name: Stop and remove old containers
         run: |
-          if docker ps -a | grep todolist_public; then
-            echo "Backing up existing database..."
-            docker cp todolist_public:/app/todo_list/db.sqlite3 ./db_backup.sqlite3 || echo "Backup failed!"
-          else
-            echo "No existing container, skipping database backup."
+          OLD_CONTAINERS=$(docker ps -a --filter name=todolist_public --format "{{.ID}}")
+          if [ -n "$OLD_CONTAINERS" ]; then
+            docker stop $OLD_CONTAINERS
+            docker rm $OLD_CONTAINERS
           fi
+        continue-on-error: true
 
-      - name: Stop and Remove Old Containers
-        run: |
-          docker stop todolist_public || true
-          docker rm todolist_public || true
-
-      - name: Build Docker Image
+      - name: Build Docker image
         run: docker build -t ghcr.io/arsank47/todolist_public:latest .
-        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoListPublic/_work/DjangoToDoListPublic1/DjangoToDoListPublic1
+        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoListPublic/_work/DjangoToDoListPublic1/DjangoToDoListPublic1 # UPDATE THIS PATH
 
-      - name: Push Docker Image to GHCR
+      - name: Push Docker image to GHCR
         run: docker push ghcr.io/arsank47/todolist_public:latest
 
-      - name: Run New Container
-        run: |
-          docker run --name todolist_public -d --restart=always \
-          -v /app/db.sqlite3:/app/todo_list/db.sqlite3 \
-          -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
+      - name: Pull Docker image from GHCR (optional)
+        run: docker pull ghcr.io/arsank47/todolist_public:latest  # Optional step for verification 1
 
-      - name: Restore Database
+      - name: Run container with restart
         run: |
-          if [ -f ./db_backup.sqlite3 ]; then
-            echo "Restoring database from backup..."
-            docker cp ./db_backup.sqlite3 todolist_public:/app/todo_list/db.sqlite3 || echo "Restore failed!"
-          else
-            echo "No backup file found, skipping database restore."
-          fi
+          docker run --name todolist_public -d --restart=always -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
 
-      - name: Apply Migrations
-        run: |
-          docker exec todolist_public python manage.py migrate
-
-      - name: Show Running Containers
+      - name: Show Docker containers
         run: docker ps

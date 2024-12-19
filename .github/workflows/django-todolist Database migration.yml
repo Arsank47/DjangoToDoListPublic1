@@ -1,0 +1,48 @@
+name: Deploy Django To-Do List Public
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.PAT_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Backup Database
+        run: |
+          docker cp todolist_public:/app/db.sqlite3 ./db_backup.sqlite3 || echo "No backup created. First deployment?"
+
+      - name: Stop and Remove Old Containers
+        run: |
+          docker stop todolist_public || true
+          docker rm todolist_public || true
+
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/arsank47/todolist_public:latest .
+        working-directory: /home/rhodium-ubuntu/actions-runner-DjangoToDoListPublic/_work/DjangoToDoListPublic1/DjangoToDoListPublic1
+
+      - name: Push Docker Image to GHCR
+        run: docker push ghcr.io/arsank47/todolist_public:latest
+
+      - name: Run New Container
+        run: |
+          docker run --name todolist_public -d --restart=always \
+          -v /app/db.sqlite3:/app/db.sqlite3 \
+          -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
+          
+      - name: Apply Migrations
+        run: |
+          docker exec todolist_public python manage.py migrate
+
+      - name: Show Running Containers
+        run: docker ps
