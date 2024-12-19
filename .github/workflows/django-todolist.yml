@@ -20,7 +20,12 @@ jobs:
 
       - name: Backup Database
         run: |
-          docker cp todolist_public:/app/db.sqlite3 ./db_backup.sqlite3 || echo "No backup created. First deployment?"
+          if docker ps -a | grep todolist_public; then
+            echo "Backing up existing database..."
+            docker cp todolist_public:/app/todo_list/db.sqlite3 ./db_backup.sqlite3 || echo "Backup failed!"
+          else
+            echo "No existing container, skipping database backup."
+          fi
 
       - name: Stop and Remove Old Containers
         run: |
@@ -37,9 +42,18 @@ jobs:
       - name: Run New Container
         run: |
           docker run --name todolist_public -d --restart=always \
-          -v /app/db.sqlite3:/app/db.sqlite3 \
+          -v /app/db.sqlite3:/app/todo_list/db.sqlite3 \
           -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
-          
+
+      - name: Restore Database
+        run: |
+          if [ -f ./db_backup.sqlite3 ]; then
+            echo "Restoring database from backup..."
+            docker cp ./db_backup.sqlite3 todolist_public:/app/todo_list/db.sqlite3 || echo "Restore failed!"
+          else
+            echo "No backup file found, skipping database restore."
+          fi
+
       - name: Apply Migrations
         run: |
           docker exec todolist_public python manage.py migrate
