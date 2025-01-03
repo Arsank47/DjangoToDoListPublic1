@@ -1,4 +1,4 @@
-name: Deploy Django To-Do List Public
+name: Deploy Django To-Do List Public 1
 
 on:
   push:
