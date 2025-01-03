@@ -37,23 +37,9 @@ jobs:
       #- name: Pull Docker image from GHCR (optional)
         #run: docker pull ghcr.io/arsank47/todolist_public:latest  # Optional step for verification 1
 
-      - name: Restore Database
-        run: |
-          if [ -f ~/persistent-storage/db.sqlite3 ]; then
-            echo "Restoring database from persistent storage..."
-          else
-            echo "No database found in persistent storage; starting fresh."
-          fi
-
       - name: Run container with restart
         run: |
           docker run --name todolist_public -d --restart=always -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
-
-      - name: Run New Container
-        run: |
-          docker run --name todolist_public -d --restart=always \
-            -v ~/persistent-storage/db.sqlite3:/app/todo_list/db.sqlite3 \
-            -p 8003:8003 ghcr.io/arsank47/todolist_public:latest
             
       - name: Apply Migrations
         run: |
